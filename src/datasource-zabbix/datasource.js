@@ -43,6 +43,10 @@ class ZabbixAPIDatasource {
     var ttl = jsonData.cacheTTL || '1h';
     this.cacheTTL = utils.parseInterval(ttl);
 
+    // Set round down interval
+    var roundDown = jsonData.roundDownInterval || '1m';
+    this.roundDownInterval = utils.parseInterval(roundDown) / 1000;
+
     // Alerting options
     this.alertingEnabled =     jsonData.alerting;
     this.addThresholds =       jsonData.addThresholds;
@@ -97,8 +101,14 @@ class ZabbixAPIDatasource {
         return [];
       }
 
-      let timeFrom = Math.ceil(dateMath.parse(options.range.from) / 1000);
-      let timeTo = Math.ceil(dateMath.parse(options.range.to) / 1000);
+      // Convert from milliseconds to seconds
+      let fromEpoch = Math.ceil(dateMath.parse(options.range.from) / 1000);
+      let toEpoch = Math.ceil(dateMath.parse(options.range.to) / 1000);
+
+      // Round time values down to the configured interval..
+      // This enables better cache hit ratios
+      let timeFrom = fromEpoch - (fromEpoch % this.roundDownInterval);
+      let timeTo = toEpoch - (toEpoch % this.roundDownInterval);
 
       // Prevent changes of original object
       let target = _.cloneDeep(t);

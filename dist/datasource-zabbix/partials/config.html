@@ -73,6 +73,20 @@
       placeholder="1h">
     </input>
   </div>
+
+  <div class="gf-form">
+    <span class="gf-form-label width-12">
+      Round down interval
+      <info-popover mode="right-normal">
+        Round all queries down to the nearest interval. Longer intervals improve cache hit ratios on Squid proxy, but means data is older.
+      </info-popover>
+    </span>
+    <input class="gf-form-input max-width-5"
+      type="text"
+      ng-model='ctrl.current.jsonData.roundDownInterval'
+      placeholder="1m">
+    </input>
+  </div>
 </div>
 
 <div class="gf-form-group">
